@@ -111,9 +111,9 @@ readTAP (TAP t) = do
     where 
           go pkt = do
             len <- mask_ $ withForeignPtr pkt $ \pkt' -> read_tap_ffi t pkt' mps
-            case len of
-                0 -> go pkt
-                _ -> return len
+            if len <= 0
+              then go pkt
+              else return len
           mk p l = let p' = castForeignPtr p
                        l' = fromIntegral l
                    in BI.fromForeignPtr p' 0 l'
